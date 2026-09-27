@@ -1,0 +1,26 @@
+<launch>
+  <arg name="voxblox_path" default="/home/helen/data/jfr_2018/machine_hall/voxblox/rs_esdf_0.10.voxblox" />
+  <arg name="groundtruth_path" default=""/>
+  <arg name="maplist_path" default=""/>
+
+
+
+  <node name="Evaluation_Maps" pkg="test_scripts" type="evaluation_maps" output="screen" respawn="true">
+    <param name="voxblox_path" value="$(arg voxblox_path)" />
+    <param name="groundtruth_path" value="$(arg groundtruth_path)" />
+    <param name="maplist_path" value="$(arg maplist_path)" />
+    <param name="voxel_size" type="double" command="rosparam get /voxel_size" />
+    <param name="occ_voxel_size" type="double" command="rosparam get /voxel_size" />
+    <param name="tsdf_voxel_size" type="double" command="rosparam get /voxel_size" />
+    <param name="esdf_voxel_size" type="double" command="rosparam get /voxel_size" />
+    <param name="voxels_per_side_in_block" type="int" command="rosparam get /voxels_per_side" />
+    <param name="occ_voxels_per_side" type="int" command="rosparam get /voxels_per_side" />
+    <param name="tsdf_voxels_per_side" type="int" command="rosparam get /voxels_per_side" />
+    <param name="esdf_voxels_per_side" type="int" command="rosparam get /voxels_per_side" />
+    <param name="publish_traversable" value="true"/>
+    <param name="publish_pointclouds" value="true"/>
+    <param name="publish_tsdf_map" value="true"/>
+    <param name="publish_esdf_map" value="true"/>
+  </node>
+
+</launch>

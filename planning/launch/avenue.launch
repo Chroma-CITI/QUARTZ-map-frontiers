@@ -1,0 +1,59 @@
+<launch>
+
+  <!-- Create a node that will launch all voxblox related node-->
+  <node pkg="map_frontiers" type="voxblox_node_launcher.py" name="voxblox_node_launcher" output="screen" args="" />
+  <!-- If automatic launch, immediately call the service to voxblox_node_launcher -->
+  <node pkg="rosservice" type="rosservice" name="rvizvisualisationlogservicecall" args="call --wait /start_voxblox_nodes " unless="$(env MANUAL_LAUNCH)"/>
+
+  <!-- If automatic launch, log the progress of the exploration -->
+  <node name="exploration_progress_tracker" pkg="map_frontiers" type="ExplorationTracker" output="screen" args="" unless="$(env MANUAL_LAUNCH)">
+      <remap from="tsdf_map_in" to="/voxblox_node/tsdf_map_out" />
+      <param name="voxel_size" type="double" command="rosparam get /voxel_size" />
+      <param name="voxels_per_side" type="double" command="rosparam get /voxels_per_side" />
+      <param name="log_dir" value="/root/.ros/log/$(env LOGGING_FOLDER)/csv/" />
+      <param name="logfilename"           value="explored_voxels_overtime_$(env WORLD)_$(env RUN_ID).csv"/>
+      <param name="groundtruth_path"           value="/root/.ros/log/maps/groundtruth/$(env WORLD)_groundtruth.tsdf"/>
+    </node>
+
+  <!-- If automatic launch, log rosbag-->
+  <arg name="bag_dir" default="/root/.ros/log/$(env LOGGING_FOLDER)/bags/" />
+  <arg name="bag_name" default="run_$(env WORLD)_$(env RUN_ID)" />
+  <node name="print_env" pkg="roslaunch" type="roslaunch" output="screen"
+          launch-prefix="bash -c 'echo MANUAL_LAUNCH=$MANUAL_LAUNCH; exec '" />
+  <node name="rosbag_recorder" pkg="rosbag" type="record" output="screen"
+    args='-O $(arg bag_dir)/$(arg bag_name)  --split --size=1024 /tf /tf_static /voxblox_node/mesh -e "(.*)mav_local_planner/local_path(.*)" "(.*)groundtruth/odom(.*)" "(.*)next_best_view(.*)"' unless="$(env MANUAL_LAUNCH)"/>
+
+  <!-- Assigning one nbv selector per existing drone-->
+  <node pkg="map_frontiers" type="nbv_selector.sh" name="nbv_selector_assigner" output="screen" args="" />
+
+  <arg name="robot_model_file" default="$(find voxblox_ros)/cfg/model/camera.dae"/>
+
+  <!-- Run voxblox_node-->
+  <node name="voxblox_node" pkg="voxblox_ros" type="voxblox_server" output="screen" args="-alsologtostderr" clear_params="true">
+    <remap from="pointcloud" to="/all_pointclouds"/>
+    <!-- If sensor_frame is not set, the tf us -->
+    <param name="~sensor_frame"           value=""/>
+    <!-- TODO: This parameter should always be bigger than the number of drone used in the simulation otherwise some pointclouds msgs will be lost -->
+    <param name="pointcloud_queue_size"           value="3"/>
+    <rosparam file="$(find voxblox_ros)/cfg/param/avenue_param.yaml"/>
+    <rosparam file="$(find voxblox_ros)/cfg/calib/avenue_calib.yaml"/>
+    <!-- Have to set the following parameters manually but should be improved in ros 2 -->
+    <param name="voxel_size" type="double" command="rosparam get /voxel_size" />
+    <param name="occ_voxel_size" type="double" command="rosparam get /voxel_size" />
+    <param name="tsdf_voxel_size" type="double" command="rosparam get /voxel_size" />
+    <param name="esdf_voxel_size" type="double" command="rosparam get /voxel_size" />
+    <param name="voxels_per_side_in_block" type="int" command="rosparam get /voxels_per_side" />
+    <param name="occ_voxels_per_side" type="int" command="rosparam get /voxels_per_side" />
+    <param name="tsdf_voxels_per_side" type="int" command="rosparam get /voxels_per_side" />
+    <param name="esdf_voxels_per_side" type="int" command="rosparam get /voxels_per_side" />
+    <param name="robot_model_file" value="$(arg robot_model_file)"/>
+    <param name="min_ray_length_m" type="double" command="rosparam get /lidar_min_range" />
+    <param name="max_ray_length_m" type="double" command="rosparam get /lidar_max_range" />
+    <param name="fov_up" type="double" command="rosparam get /vertical_min_angle" />
+    <param name="fov_down" type="double" command="rosparam get /vertical_max_angle" />
+  </node>
+
+  <node pkg="map_frontiers" type="start_rviz.sh" name="rvizvisualisation" output="screen" args="" if="$(env MANUAL_LAUNCH)"/>
+  <!-- To avoid being spammed with rviz warnings -->
+  <node pkg="rosservice" type="rosservice" name="rvizvisualisationlogservicecall" args="call --wait /rvizvisualisation/set_logger_level 'ros' 'error'" if="$(env MANUAL_LAUNCH)"/>
+</launch>

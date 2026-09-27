@@ -1,0 +1,22 @@
+<launch>
+  <arg name="namespace" default="" />
+  <group ns="$(arg namespace)">
+    <node name="drone_NBV_selector" pkg="map_frontiers" type="NBV_Selector" output="screen">
+        <remap from="esdf_map_out" to="/voxblox_node/esdf_map_out" />
+        <remap from="tsdf_map_out" to="/voxblox_node/tsdf_map_out" />
+
+        <remap from="pos_goal" to="/$(arg namespace)/next_best_viewpoint" />
+        <remap from="groundtruth/odom" to="/$(arg namespace)/groundtruth/odom" />
+        <remap from="is_idle" to="/$(arg namespace)/mav_local_planner/is_idle" />
+
+        <param name="NBV_selector/p_ray_length" type="double" command="rosparam get /lidar_max_range" />
+
+        <param name="NBV_selector/angle_low" type="double" command="rosparam get /vertical_min_angle" />
+        <param name="NBV_selector/angle_high" type="double" command="rosparam get /vertical_max_angle" />
+
+        <param name="voxel_size" type="double" command="rosparam get /voxel_size" />
+        <param name="voxels_per_side" type="double" command="rosparam get /voxels_per_side" />
+
+    </node>
+  </group>
+</launch>

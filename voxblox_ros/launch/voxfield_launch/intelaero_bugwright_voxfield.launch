@@ -1,0 +1,27 @@
+<launch>
+  <param name="use_sim_time" value="true" />
+  <arg name="process_every_nth_frame" default="1" />
+
+  <arg name="robot_model_file" default="$(find voxblox_ros)/cfg/model/camera.dae"/>  <!-- TODO: Get the one from the drone-simulator -->
+
+  <node name="voxblox_node_0" pkg="voxblox_ros" type="voxfield_server" output="screen" args="-alsologtostderr" clear_params="true">
+    <remap from="pointcloud" to="/intelaero_bugwright_0/r200/points"/>
+    <remap from="~mesh" to="/voxfield_mesh"/>
+    <param name="~sensor_frame"           value="intelaero_bugwright_0_r200_depth_link"/>
+    <rosparam file="$(find voxblox_ros)/cfg/calib/intelaero_bugwright_calib.yaml"/>  <!-- Sensor extrinsics and intrinsics -->
+    <rosparam file="$(find voxblox_ros)/cfg/param/intelaero_bugwright_param.yaml"/>  <!-- Parameters -->
+    <param name="robot_model_file" value="$(arg robot_model_file)"/>
+  </node>
+
+  <node name="voxblox_node_1" pkg="voxblox_ros" type="voxfield_server" output="screen" args="-alsologtostderr" clear_params="true">
+    <remap from="pointcloud" to="/intelaero_bugwright_1/r200/points"/>
+    <remap from="~mesh" to="/voxfield_mesh"/>
+    <param name="~sensor_frame"           value="intelaero_bugwright_1_r200_depth_link"/>
+    <rosparam file="$(find voxblox_ros)/cfg/calib/intelaero_bugwright_calib.yaml"/>  <!-- Sensor extrinsics and intrinsics -->
+    <rosparam file="$(find voxblox_ros)/cfg/param/intelaero_bugwright_param.yaml"/>  <!-- Parameters -->
+    <param name="robot_model_file" value="$(arg robot_model_file)"/>
+  </node>
+
+  <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find voxblox_ros)/cfg/rviz/intelaero_bugwright_5cm.rviz" />
+
+</launch>

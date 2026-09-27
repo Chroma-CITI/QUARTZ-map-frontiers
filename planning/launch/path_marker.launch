@@ -1,0 +1,33 @@
+<launch>
+    <arg name="name" default="ours" />
+
+  <node name="PathMarker0" pkg="map_frontiers" type="path_marker.py" output="screen">
+    <remap from="odom" to="/iris_velodyne_0/groundtruth/odom" />
+    <remap from="path_marker" to="/iris_velodyne_0/mav_local_planner/bag_path" />
+
+    <param name="color_r" value="1" />
+    <param name="color_g" value="0" />
+    <param name="color_b" value="0" />
+    <param name="name" value="$(arg name)_0" />
+  </node>
+
+  <node name="PathMarker1" pkg="map_frontiers" type="path_marker.py" output="screen">
+    <remap from="odom" to="/iris_velodyne_1/groundtruth/odom" />
+    <remap from="path_marker" to="/iris_velodyne_1/mav_local_planner/bag_path" />
+
+    <param name="color_r" value="0" />
+    <param name="color_g" value="1" />
+    <param name="color_b" value="0" />
+    <param name="name" value="$(arg name)_1" />
+  </node>
+
+  <node name="PathMarker2" pkg="map_frontiers" type="path_marker.py" output="screen">
+    <remap from="odom" to="/iris_velodyne_2/groundtruth/odom" />
+    <remap from="path_marker" to="/iris_velodyne_2/mav_local_planner/bag_path" />
+
+    <param name="color_r" value="1" />
+    <param name="color_g" value="1" />
+    <param name="color_b" value="0" />
+    <param name="name" value="$(arg name)_2" />
+  </node>
+</launch>

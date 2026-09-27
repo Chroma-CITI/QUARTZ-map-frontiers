@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>map_frontiers</name>
+  <version>0.0.0</version>
+  <description>Map frontiers</description>
+
+  <maintainer email="yuepan@student.ethz.ch">Yue Pan</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>cv_bridge</depend>
+  <depend>gflags_catkin</depend>
+  <depend>interactive_markers</depend>
+  <depend>minkindr_conversions</depend>
+  <depend>pcl_conversions</depend>
+  <depend>pcl_ros</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf</depend>
+  <depend>voxblox</depend>
+  <depend>voxblox_map</depend>
+  <depend>voxblox_msgs</depend>
+  <depend>voxblox_rviz_plugin</depend>
+  <depend>planning_msgs</depend>
+</package>
