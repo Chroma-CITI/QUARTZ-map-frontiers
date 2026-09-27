@@ -10,8 +10,7 @@ WORKDIR /opt/catkin_ws/src
 # install ssh client and git
 RUN apt-get update && apt-get install -y git openssh-client
 # download public key for github.com
-RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan gitlab.inria.fr github.com >> ~/.ssh/known_hosts
-RUN mkdir -p -m 700 /root/.ssh  && echo "Host gitlab.inria.fr\n StrictHostKeyChecking accept-new\n  UserKnownHostsFile /root/.ssh/known_hosts\n" > /root/.ssh/config
+RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Install necessary packages
 COPY requirements.txt /tmp/requirements.txt
@@ -24,10 +23,7 @@ RUN apt-get update && \
 ARG BRANCH='main'
 ARG BRANCH_COMMIT=$BRANCH # Checkout the last commit per default
 
-#RUN --mount=type=secret,id=gitlab_pat \
-#    export GITLAB_TOKEN=$(cat /run/secrets/gitlab_pat) && \
-#    git clone --single-branch --branch $BRANCH https://oauth2:$GITLAB_TOKEN@gitlab.inria.fr/chroma1/drones/map-frontiers.git \
-RUN --mount=type=ssh git clone --single-branch --branch $BRANCH git@gitlab.inria.fr:chroma1/drones/map-frontiers.git \
+RUN --mount=type=ssh git clone --single-branch --branch $BRANCH git@github.com:Chroma-CITI/QUARTZ-map-frontiers.git map-frontiers \
     && cd /opt/catkin_ws/src/map-frontiers/ \
     && echo "The commit to be check out is: $BRANCH_COMMIT" \
     && git checkout $BRANCH_COMMIT \

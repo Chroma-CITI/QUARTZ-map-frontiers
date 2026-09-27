@@ -24,7 +24,7 @@
     uri: git@github.com:ethz-asl/protobuf_catkin.git
 - git:
     local-name: map-frontiers
-    uri: git@gitlab.inria.fr:chroma1/drones/map-frontiers.git
+    uri: git@github.com:Chroma-CITI/QUARTZ-map-frontiers.git
 - git:
     local-name: regularized-k-means
     uri: git@github.com:zhu-he/regularized-k-means.git
